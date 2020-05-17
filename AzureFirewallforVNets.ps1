@@ -54,9 +54,11 @@ $gwsubn2 = New-AzVirtualNetworkSubnetConfig -Name "GatewaySubnet" -AddressPrefix
 
 $uksouthvnet = New-AzVirtualNetwork -Name UKSVnet1 -ResourceGroupName REBELRG2 -Location "UK South" -AddressPrefix 10.1.0.0/16 -Subnet $subn2,$gwsubn2
 
-$gatewayip2 = New-AzPublicIpAddress -Name UKSVnet1GW1 -ResourceGroupName REBELRG2 -Location "UK South" -AllocationMethod Dynamic
+
 
 ################### Create VPN Gateway in Remote network ################################
+
+$gatewayip2 = New-AzPublicIpAddress -Name UKSVnet1GW1 -ResourceGroupName REBELRG2 -Location "UK South" -AllocationMethod Dynamic
 
 $vnet2 = Get-AzVirtualNetwork -Name UKSVnet1 -ResourceGroupName REBELRG2
 $gwsubnet2 = Get-AzVirtualNetworkSubnetConfig -Name "GatewaySubnet" -VirtualNetwork $vnet2
