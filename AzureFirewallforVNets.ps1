@@ -11,8 +11,6 @@ $gwsubn1 = New-AzVirtualNetworkSubnetConfig -Name "GatewaySubnet" -AddressPrefix
 
 $eusfwvnet = New-AzVirtualNetwork -Name EUSFWVnet1 -ResourceGroupName REBELRG1 -Location "East US" -AddressPrefix 10.0.0.0/16 -Subnet $fwsubn1,$gwsubn1
 
-
-
 ################# Create VPN Gateway in Firewall Network ##################
 
 $gatewayip1 = New-AzPublicIpAddress -Name EUSFWVnet1GW1 -ResourceGroupName REBELRG1 -Location "East US" -AllocationMethod Dynamic
@@ -53,8 +51,6 @@ $subn2 = New-AzVirtualNetworkSubnetConfig -Name VMNet1 -AddressPrefix 10.1.0.0/2
 $gwsubn2 = New-AzVirtualNetworkSubnetConfig -Name "GatewaySubnet" -AddressPrefix 10.1.1.0/24
 
 $uksouthvnet = New-AzVirtualNetwork -Name UKSVnet1 -ResourceGroupName REBELRG2 -Location "UK South" -AddressPrefix 10.1.0.0/16 -Subnet $subn2,$gwsubn2
-
-
 
 ################### Create VPN Gateway in Remote network ################################
 
