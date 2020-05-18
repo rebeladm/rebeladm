@@ -88,7 +88,6 @@ New-AzVirtualNetworkGatewayConnection -Name uksgwtofwgw -ResourceGroupName REBEL
 Add-AzVirtualNetworkPeering -Name FWtoWorkloads -VirtualNetwork $eusfwvnet -RemoteVirtualNetworkId $workloadvnet.Id -AllowGatewayTransit
 Add-AzVirtualNetworkPeering -Name WorkloadstoFW -VirtualNetwork $workloadvnet -RemoteVirtualNetworkId $eusfwvnet.Id -AllowForwardedTraffic -UseRemoteGateways
 
-
 ############### Create routing ##################
 
 $routetable1 = New-AzRouteTable -Name REBELRouteTable1 -ResourceGroupName REBELRG1 -Location "East US"
@@ -110,7 +109,6 @@ $mylogin = Get-Credential
 New-AzVm -ResourceGroupName REBELRG3 -Name “REBELTVM01” -Location “East US” -VirtualNetworkName “EUSFVnet1” -SubnetName “VMNet2” -addressprefix 10.2.0.0/24 -PublicIpAddressName “REBELVM01IP1” -OpenPorts 3389 -Image win2019datacenter -Size Standard_D2s_v3 -Credential $mylogin
 
 New-AzVm -ResourceGroupName REBELRG2 -Name “REBELTVM02” -Location “UK South” -VirtualNetworkName “UKSVnet1” -SubnetName “VMNet1” -addressprefix 10.1.0.0/24 -PublicIpAddressName “REBELVM02IP1” -OpenPorts 3389 -Image win2019datacenter -Size Standard_D2s_v3 -Credential $mylogin
-
 
 ############### Additonal Firewall rule to allow RDP traffic from workloads network to remote network ################################
 
