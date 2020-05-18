@@ -1,4 +1,5 @@
 ################# Create Azure Firewall Resource Group ####################
+
 Connect-AzAccount
 
 New-AzResourceGroup -Name REBELRG1 -Location “East US”
