@@ -18,18 +18,34 @@ Set-AzKeyVaultAccessPolicy -VaultName REBELVMKV1 -ObjectId $des1.Identity.Princi
 
 ##### Create Azure VM with SSE and CMK #####
 
+##### Setup vNet #####
+
 $vmsubnet = New-AzVirtualNetworkSubnetConfig -Name vmsubnet -AddressPrefix "10.0.2.0/24"
 New-AzVirtualNetwork -Name REBELVN1 -ResourceGroupName REBELRG1 -Location "East US" -AddressPrefix "10.0.0.0/16" -Subnet $vmsubnet
+
+##### Setup Public IP Address #####
+
 New-AzPublicIpAddress -ResourceGroupName REBELRG1 -Location eastus -AllocationMethod Static -IdleTimeoutInMinutes 4 -Name "rebelpublic1" -Sku Standard
+
+##### Setup NSG #####
+
 $rdprule = New-AzNetworkSecurityRuleConfig -Name rebelrdprule -Protocol Tcp -Direction Inbound -Priority 1000 -SourceAddressPrefix * -SourcePortRange * -DestinationAddressPrefix * -DestinationPortRange 3389 -Access Allow
 $rebelnsg = New-AzNetworkSecurityGroup -ResourceGroupName REBELRG1 -Location eastus -Name rebelNSG1 -SecurityRules $rdprule
+
+##### Build VM Config #####
 $rebelvnet = Get-AzVirtualNetwork -Name REBELVN1 -ResourceGroupName REBELRG1
 $publicip = Get-AzPublicIpAddress -Name rebelpublic1 -ResourceGroupName REBELRG1
 $rebelnic1 = New-AzNetworkInterface -Name rebelvmnic1 -ResourceGroupName REBELRG1 -Location eastus -SubnetId $rebelvnet.Subnets[0].Id -PublicIpAddressId $publicip.Id -NetworkSecurityGroupId $rebelnsg.Id
 $cred = Get-Credential
 $rebelvmconf = New-AzVMConfig -VMName REBEL01 -VMSize Standard_DS1_v2 | Set-AzVMOperatingSystem -Windows -ComputerName REBEL01 -Credential $cred | Set-AzVMSourceImage -PublisherName MicrosoftWindowsServer -Offer WindowsServer -Skus 2019-Datacenter -Version latest | Add-AzVMNetworkInterface -Id $rebelnic1.Id
+
+##### Encrypt Disks with SSE and CMK #####
+
 $des = Get-AzDiskEncryptionSet -ResourceGroupName REBELRG1 -Name RDES1
 $VM = "REBEL01"
 $rebelvmconf = Set-AzVMOSDisk -VM $rebelvmconf -Name $($VM +"_OSDisk") -DiskEncryptionSetId $des.Id -CreateOption FromImage
 $rebelvmconf = Add-AzVMDataDisk -VM $rebelvmconf -Name $($VM +"DataDisk1") -DiskSizeInGB 128 -StorageAccountType Premium_LRS -CreateOption Empty -Lun 0 -DiskEncryptionSetId $des.Id 
+
+##### Build VM #####
+
 New-AzVM -ResourceGroupName REBELRG1 -Location "East US" -VM $rebelvmconf -Verbose
